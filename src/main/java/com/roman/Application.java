@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.Arrays;
 
 /**
- * Spring boot main application
+ * Spring boot main application with some Java configuration
  */
 @SpringBootApplication
 public class Application {
