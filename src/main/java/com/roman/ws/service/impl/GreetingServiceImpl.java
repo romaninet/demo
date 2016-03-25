@@ -3,8 +3,12 @@ package com.roman.ws.service.impl;
 import com.roman.ws.model.Greeting;
 import com.roman.ws.repository.GreetingRepository;
 import com.roman.ws.service.GreetingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
@@ -12,7 +16,9 @@ import java.util.Collection;
  * Created by Administrator on 3/24/16.
  */
 @Service
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class GreetingServiceImpl implements GreetingService {
+    private static final Logger logger = LoggerFactory.getLogger(GreetingServiceImpl.class);
 
     private GreetingRepository greetingRepository;
 
@@ -34,6 +40,7 @@ public class GreetingServiceImpl implements GreetingService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public Greeting create(Greeting greeting) {
         // Ensure the entity object to be created does NOT exist in the
         // repository. Prevent the default behavior of save() which will update
@@ -44,10 +51,18 @@ public class GreetingServiceImpl implements GreetingService {
         }
 
         Greeting savedGreeting = greetingRepository.save(greeting);
+
+        //TODO: this is a test of transactional
+        if(savedGreeting.getId()==8L){
+            logger.error("Please Roll me back ( by Roman.S. ) !!");
+            throw new RuntimeException("Please Roll me back ( by Roman.S. ) !!");
+        }
+
         return savedGreeting;
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public Greeting update(Greeting greeting) {
         // Ensure the entity object to be updated exists in the repository to
         // prevent the default behavior of save() which will persist a new
@@ -64,6 +79,7 @@ public class GreetingServiceImpl implements GreetingService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void delete(Long id) {
         greetingRepository.delete(id);
     }
