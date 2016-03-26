@@ -6,6 +6,7 @@ import com.roman.ws.service.GreetingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,6 +29,12 @@ import java.util.Collection;
 public class GreetingServiceImpl implements GreetingService {
     private static final Logger logger = LoggerFactory.getLogger(GreetingServiceImpl.class);
 
+    /**
+     * The <code>CounterService</code> captures metrics for Spring Actuator.
+     */
+    @Autowired
+    private CounterService counterService;
+
     private GreetingRepository greetingRepository;
 
     @Autowired
@@ -38,6 +45,9 @@ public class GreetingServiceImpl implements GreetingService {
     @Override
     public Collection<Greeting> findAll() {
         logger.info("> findAll");
+
+        counterService.increment("method.invoked.greetingServiceBean.findAll");
+
         Collection<Greeting> greetings = greetingRepository.findAll();
         logger.info("< findAll");
         return greetings;
@@ -46,6 +56,8 @@ public class GreetingServiceImpl implements GreetingService {
     @Override
     @Cacheable(value = "greetings", key = "#id")
     public Greeting findOne(Long id) {logger.info("> findOne id:{}", id);
+        counterService.increment("method.invoked.greetingServiceBean.findOne");
+
         Greeting greeting = greetingRepository.findOne(id);
         logger.info("< findOne id:{}", id);
         return greeting;
@@ -56,6 +68,8 @@ public class GreetingServiceImpl implements GreetingService {
     @CachePut(value = "greetings", key = "#result.id")
     public Greeting create(Greeting greeting) {
         logger.info("> create");
+
+        counterService.increment("method.invoked.greetingServiceBean.create");
 
         // Ensure the entity object to be created does NOT exist in the
         // repository. Prevent the default behavior of save() which will update
@@ -77,6 +91,8 @@ public class GreetingServiceImpl implements GreetingService {
     public Greeting update(Greeting greeting) {
         logger.info("> update id:{}", greeting.getId());
 
+        counterService.increment("method.invoked.greetingServiceBean.update");
+
         // Ensure the entity object to be updated exists in the repository to
         // prevent the default behavior of save() which will persist a new
         // entity if the entity matching the id does not exist
@@ -97,6 +113,8 @@ public class GreetingServiceImpl implements GreetingService {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @CacheEvict(value = "greetings", key = "#id")
     public void delete(Long id) {
+        counterService.increment("method.invoked.greetingServiceBean.delete");
+
         logger.info("> delete id:{}", id);
         greetingRepository.delete(id);
         logger.info("< delete id:{}", id);
