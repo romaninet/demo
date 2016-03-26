@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
  */
 @RestController
 @RequestMapping(value = "/api")
-public class GreetingsController {
+public class GreetingsController extends BaseController{
 
     private static final Logger logger = LoggerFactory.getLogger(GreetingsController.class);
 
@@ -156,7 +156,7 @@ public class GreetingsController {
      * @return A ResponseEntity with an empty response body and a HTTP status
      *         code as described in the method comment.
      */
-    @RequestMapping(value = "/greetings/{id}", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/greetings/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Greeting> deleteGreeting(@PathVariable("id") Long id) {
         logger.debug("inside delete greeting method");
         greetingService.delete(id);
