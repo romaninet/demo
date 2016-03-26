@@ -5,14 +5,19 @@ import com.roman.ws.service.GreetingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
 /**
+ * The GreetingBatchBean contains <code>@Scheduled</code> methods operating on
+ * Greeting entities to perform batch operations.
+ *
  * Created by Administrator on 3/25/16.
  */
+@Profile("batch")
 @Component
 public class GreetingBatchBean {
     private static final Logger logger = LoggerFactory.getLogger(GreetingBatchBean.class);
@@ -24,7 +29,15 @@ public class GreetingBatchBean {
         this.greetingService = greetingService;
     }
 
-    //@Scheduled(cron = "0,30 * * * * *")
+    /**
+     * Use a cron expression to execute logic on a schedule.
+     *
+     * Expression: second minute hour day-of-month month weekday
+     *
+     * @see http ://docs.spring.io/spring/docs/current/javadoc-api/org/
+     *      springframework /scheduling/support/CronSequenceGenerator.html
+     */
+    @Scheduled(cron = "${batch.greeting.cron}")
     public void cronJob() {
         logger.info("> cronJob");
         // Add scheduled logic here
@@ -33,7 +46,14 @@ public class GreetingBatchBean {
         logger.info("< cronJob");
     }
 
-    //@Scheduled(initialDelay = 5000, fixedRate = 15000)
+    /**
+     * Execute logic beginning at fixed intervals with a delay after the
+     * application starts. Use the <code>fixedRate</code> element to indicate
+     * how frequently the method is to be invoked. Use the
+     * <code>initialDelay</code> element to indicate how long to wait after
+     * application startup to schedule the first execution.
+     */
+    @Scheduled(initialDelayString = "${batch.greeting.initialdelay}", fixedRateString = "${batch.greeting.fixedrate}")
     public void fixedRateJobWithInitialDelay() {
         logger.info("> fixedRateJobWithInitialDelay");
         // Add scheduled logic here
@@ -49,7 +69,14 @@ public class GreetingBatchBean {
         logger.info("< fixedRateJobWithInitialDelay");
     }
 
-    //@Scheduled(initialDelay = 5000, fixedDelay = 15000)
+    /**
+     * Execute logic with a delay between the end of the last execution and the
+     * beginning of the next. Use the <code>fixedDelay</code> element to
+     * indicate the time to wait between executions. Use the
+     * <code>initialDelay</code> element to indicate how long to wait after
+     * application startup to schedule the first execution.
+     */
+    @Scheduled(initialDelayString = "${batch.greeting.initialdelay}", fixedDelayString = "${batch.greeting.fixeddelay}")
     public void fixedDelayJobWithInitialDelay() {
         logger.info("> fixedDelayJobWithInitialDelay");
         // Add scheduled logic here
