@@ -27,8 +27,6 @@ import java.util.concurrent.Future;
 @RequestMapping(value = "/api")
 public class GreetingsController extends BaseController{
 
-    private static final Logger logger = LoggerFactory.getLogger(GreetingsController.class);
-
     /**
      * The GreetingService business service.
      */
